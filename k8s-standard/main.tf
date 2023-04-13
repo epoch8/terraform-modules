@@ -81,3 +81,7 @@ resource "kubernetes_manifest" "cluster_issuer" {
     }
   }
 }
+
+output "ingress_dns" {
+  value = google_dns_record_set.name.name
+}
