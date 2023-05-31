@@ -1,3 +1,7 @@
+# 2023-06-01
+
+* Добавлена DNS запись `*.${base_domain}` -> `CNAME ingress_dns`
+
 # 2023-05-31
 
 * Добавлен kube-prometheus-stack для стандартного мониторинга

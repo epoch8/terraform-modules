@@ -37,6 +37,18 @@ resource "google_dns_record_set" "ingress_nginx" {
   ]
 }
 
+resource "google_dns_record_set" "all_subdomains" {
+  name = "*.${local.ingress_base_domain}."
+  type = "CNAME"
+  ttl  = 300
+
+  managed_zone = var.google_dns_managed_zone.name
+
+  rrdatas = [
+    google_dns_record_set.ingress_nginx.name
+  ]
+}
+
 output "ingress_dns" {
   value = google_dns_record_set.ingress_nginx.name
 }
