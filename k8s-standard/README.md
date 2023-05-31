@@ -1,11 +1,12 @@
-# Модули
+# Модуль `k8s-standard`
 
-## k8s-standard
-
-* Настраивает ingress-nginx, cert-manager
+* Устанавливает ingress-nginx
+* Устанавливает cert-manager
 * Прописывает DNS ingress-nginx.XXX.epoch8.dev
+* Прописывает DNS *.XXX.epoch8.dev
+* Устанавливает kube-prometheus-stack
 
-### Requirements
+## Requirements
 
 Providers:
 
@@ -13,7 +14,7 @@ Providers:
 * `kubernetes`
 * `helm`
 
-### Setup
+## Setup
 
 Сначала нужно создать helm-релиз для cert_manager
 
