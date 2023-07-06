@@ -9,3 +9,8 @@ variable "admin_email" {
   type    = string
   default = "admin@epoch8.co"
 }
+
+variable "loki_enabled" {
+  type = bool
+  default = false
+}

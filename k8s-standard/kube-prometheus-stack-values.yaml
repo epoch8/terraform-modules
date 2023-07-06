@@ -30,3 +30,15 @@ grafana:
   persistence:
     enabled: true
     size: 10Gi
+
+%{ if loki_enabled }
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      uid: loki
+      access: proxy
+      url: http://kube-loki-stack.kube-loki-stack:3100
+      version: 1
+      jsonData:
+        maxLines: 1000
+%{ endif }
