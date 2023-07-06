@@ -13,7 +13,7 @@ resource "helm_release" "kube_loki_stack" {
   chart      = "loki-stack"
   version    = "2.9.9"
 
-  namespace = kubernetes_namespace.kube-loki-stack.metadata.0.name
+  namespace = kubernetes_namespace.kube-loki-stack[0].metadata.0.name
 
   values = [
     templatefile("${path.module}/kube-loki-stack-values.yaml", {})
