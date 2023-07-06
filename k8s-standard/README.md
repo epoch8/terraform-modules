@@ -5,6 +5,7 @@
 * Прописывает DNS ingress-nginx.XXX.epoch8.dev
 * Прописывает DNS *.XXX.epoch8.dev
 * Устанавливает kube-prometheus-stack
+* Устанавливает loki-stack
 
 ## Requirements
 
