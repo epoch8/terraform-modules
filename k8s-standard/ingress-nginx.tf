@@ -9,8 +9,20 @@ resource "helm_release" "ingress_nginx" {
 
   repository = "https://kubernetes.github.io/ingress-nginx"
   chart      = "ingress-nginx"
+  version    = "4.7.1"
 
   namespace = kubernetes_namespace_v1.ingress_nginx.metadata.0.name
+
+  values = [
+    jsonencode({
+      controller = {
+        resources = var.nginx_resources
+        autoscaling = {
+          enabled = true
+        }
+      }
+    }),
+  ]
 }
 
 data "kubernetes_service_v1" "ingress_nginx" {
@@ -22,7 +34,7 @@ data "kubernetes_service_v1" "ingress_nginx" {
 
 locals {
   ingress_base_domain = replace(var.google_dns_managed_zone.dns_name, "/\\.$/", "")
-  ingress_domain = "ingress-nginx.${local.ingress_base_domain}"
+  ingress_domain      = "ingress-nginx.${local.ingress_base_domain}"
 }
 
 resource "google_dns_record_set" "ingress_nginx" {
