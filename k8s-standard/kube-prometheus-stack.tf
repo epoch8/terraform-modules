@@ -5,7 +5,7 @@ resource "random_string" "grafana_admin_password" {
 
 resource "kubernetes_namespace" "kube-prometheus-stack" {
   metadata {
-    name = "kube-prometheus-stack"
+    name = var.kp_namespace
   }
 }
 
@@ -20,7 +20,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "kube-prometheus-stack"
-  version    = "46.5.0"
+  version    = "48.2.2"
 
   namespace = kubernetes_namespace.kube-prometheus-stack.metadata.0.name
 
