@@ -1,3 +1,9 @@
+# 2023-07-27
+
+* Зафиксирована версия helm chart для ingress-nginx==4.7.1
+* Увеличена версия helm chart для kube-prometheus-stack==48.2.2
+* Добавлен параметр для неймспейса kube-prometheus-stack
+
 # 2023-07-06
 
 * Добавлен loki-stack для сбора логов k8s
