@@ -8,9 +8,11 @@ terraform {
 }
 
 variable "project" {
+  type = string
 }
 
 variable "k8s_namespace" {
+  type = string
 }
 
 # Use SQLite instead of PostgreSQL. If set to true, the following variables 
