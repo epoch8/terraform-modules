@@ -16,9 +16,12 @@ resource "helm_release" "ingress_nginx" {
   values = [
     jsonencode({
       controller = {
-        resources = var.nginx_resources
+        resources   = var.nginx_resources
         autoscaling = {
           enabled = true
+        }
+        config = {
+          enable-underscores-in-headers = true
         }
       }
     }),
