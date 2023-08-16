@@ -8,14 +8,17 @@ image:
   tag: "0.105.3"
 
 env:
+%{ if !use_sqlite }
   - name: NC_DB_JSON_FILE
     value: /configs/conn.json
-  
+%{ endif }
+
   - name: NC_ADMIN_EMAIL
     value: "${admin_email}"
   - name: NC_ADMIN_PASSWORD
     value: "${admin_password}"
 
+%{ if !use_sqlite }
 configs:
   - name: conn.json
     value: |
@@ -35,6 +38,14 @@ configs:
           }
         }
       }
+%{ endif }
+
+%{ if use_sqlite }
+volumes:
+  - name: data
+    size: 1Gi
+    mountPath: /usr/app/data/
+%{ endif }
 
 # Port that container is using
 port: 8080

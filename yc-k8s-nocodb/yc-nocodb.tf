@@ -13,10 +13,20 @@ variable "project" {
 variable "k8s_namespace" {
 }
 
+# Use SQLite instead of PostgreSQL. If set to true, the following variables 
+# are ignored: yc_mdb_postgresql_cluster_id, yc_mdb_postgresql_cluster_fqdn.
+variable "noco_use_sqlite" {
+  description = "Use SQLite instead of PostgreSQL"
+
+  default = false
+}
+
 variable "yc_mdb_postgresql_cluster_id" {
+  default = ""
 }
 
 variable "yc_mdb_postgresql_cluster_fqdn" {
+  default = ""
 }
 
 variable "yc_s3_root_access_key" {
@@ -30,23 +40,29 @@ variable "admin_email" {
 }
 
 resource "random_string" "nocodb_password" {
+  count = var.noco_use_sqlite ? 0 : 1
+
   length  = 16
   special = false
 }
 
 resource "yandex_mdb_postgresql_user" "nocodb_user" {
+  count = var.noco_use_sqlite ? 0 : 1
+
   cluster_id = var.yc_mdb_postgresql_cluster_id
 
   name       = "${var.project}_nocodb"
-  password   = random_string.nocodb_password.result
+  password   = random_string.nocodb_password.0.result
   conn_limit = 10
 }
 
 resource "yandex_mdb_postgresql_database" "nocodb_db" {
+  count = var.noco_use_sqlite ? 0 : 1
+
   cluster_id = var.yc_mdb_postgresql_cluster_id
 
   name  = "${var.project}_nocodb"
-  owner = yandex_mdb_postgresql_user.nocodb_user.name
+  owner = yandex_mdb_postgresql_user.nocodb_user.0.name
 }
 
 resource "random_string" "nocodb_admin_user_password" {
@@ -98,11 +114,13 @@ resource "helm_release" "nocodb" {
 
         name = "${var.project}-nocodb"
 
+        use_sqlite = var.noco_use_sqlite
+
         db_host     = var.yc_mdb_postgresql_cluster_fqdn
         db_port     = 6432
-        db_dbname   = yandex_mdb_postgresql_database.nocodb_db.name
-        db_username = yandex_mdb_postgresql_user.nocodb_user.name
-        db_password = random_string.nocodb_password.result
+        db_dbname   = var.noco_use_sqlite ? "" : yandex_mdb_postgresql_database.nocodb_db.0.name
+        db_username = var.noco_use_sqlite ? "" : yandex_mdb_postgresql_user.nocodb_user.0.name
+        db_password = var.noco_use_sqlite ? "" : random_string.nocodb_password.0.result
 
         admin_email    = var.admin_email
         admin_password = random_string.nocodb_admin_user_password.result
@@ -115,7 +133,7 @@ output "config" {
   value = {
     nocodb_url = "https://nocodb.${var.project}.epoch8.co/"
 
-    nocodb_db = "postgres://${yandex_mdb_postgresql_user.nocodb_user.name}:${random_string.nocodb_password.result}@${var.yc_mdb_postgresql_cluster_fqdn}:6432/${yandex_mdb_postgresql_database.nocodb_db.name}"
+    nocodb_db = var.noco_use_sqlite ? "local sqlite" : "postgres://${yandex_mdb_postgresql_user.nocodb_user.0.name}:${random_string.nocodb_password.0.result}@${var.yc_mdb_postgresql_cluster_fqdn}:6432/${yandex_mdb_postgresql_database.nocodb_db.0.name}"
 
     admin_email    = var.admin_email
     admin_password = random_string.nocodb_admin_user_password.result
