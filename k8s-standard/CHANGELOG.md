@@ -1,3 +1,7 @@
+# 2023-08-16
+
+* Для ingress_nginx выставлен параметр `enable-underscores-in-headers = true`
+
 # 2023-07-27
 
 * Зафиксирована версия helm chart для ingress-nginx==4.7.1
