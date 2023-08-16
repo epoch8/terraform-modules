@@ -50,9 +50,16 @@ volumes:
 # Port that container is using
 port: 8080
 
-probe:
+livenessProbe:
   httpGet:
     path: /dashboard/
+    port: http
+  failureThreshold: 10
+
+readinessProbe:
+  httpGet:
+    path: /dashboard/
+    port: http
 
 ingress:
   enabled: true
@@ -75,9 +82,3 @@ resources:
   requests:
     cpu: 100m
     memory: 512Mi
-
-serviceAccount:
-  create: false
-
-livenessProbe:
-  failureThreshold: 10
