@@ -39,6 +39,10 @@ variable "admin_email" {
   default = "admin@epoch8.co"
 }
 
+locals {
+  project_with_underlines = replace(var.project, "-", "_")
+}
+
 resource "random_string" "nocodb_password" {
   count = var.noco_use_sqlite ? 0 : 1
 
@@ -51,7 +55,7 @@ resource "yandex_mdb_postgresql_user" "nocodb_user" {
 
   cluster_id = var.yc_mdb_postgresql_cluster_id
 
-  name       = "${var.project}_nocodb"
+  name       = "${local.project_with_underlines}_nocodb"
   password   = random_string.nocodb_password.0.result
   conn_limit = 10
 }
@@ -61,7 +65,7 @@ resource "yandex_mdb_postgresql_database" "nocodb_db" {
 
   cluster_id = var.yc_mdb_postgresql_cluster_id
 
-  name  = "${var.project}_nocodb"
+  name  = "${local.project_with_underlines}_nocodb"
   owner = yandex_mdb_postgresql_user.nocodb_user.0.name
 }
 
