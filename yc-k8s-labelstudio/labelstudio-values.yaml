@@ -1,0 +1,43 @@
+global:
+  pgConfig:
+    host: "${db_host}"
+    port: ${db_port}
+    userName: "${db_user}"
+    dbName: "${db_name}"
+    password:
+      secretName: "${db_pass_secret_name}"
+      secretKey: "${db_pass_secret_key}"
+  
+  extraEnvironmentVars:
+    LABEL_STUDIO_USERNAME: ${ls_admin_username}
+    LABEL_STUDIO_PASSWORD: ${ls_admin_password}
+    LABEL_STUDIO_USER_TOKEN: ${ls_admin_token}
+
+    LABEL_STUDIO_DISABLE_SIGNUP_WITHOUT_LINK: "true"
+
+app:
+  deploymentStrategy:
+    type: Recreate
+
+  resources:
+    requests:
+      cpu: "${app_resources.requests.cpu}"
+      memory: "${app_resources.requests.memory}"
+    limits:
+      cpu: "${app_resources.limits.cpu}"
+      memory: "${app_resources.limits.memory}"
+
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    host: ${ls_domain}
+    tls:
+      - hosts:
+          - ${ls_domain}
+        secretName: ${ls_domain}-tls
+
+postgresql:
+  enabled: false
