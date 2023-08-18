@@ -1,6 +1,7 @@
 terraform {
   required_providers {
-    helm = {}
+    helm       = {}
+    kubernetes = {}
     yandex = {
       source = "yandex-cloud/yandex"
     }
@@ -126,9 +127,14 @@ resource "random_string" "labelstudio_admin_token" {
 resource "helm_release" "labelstudio" {
   name = "${var.project}-labelstudio"
 
-  repository = "https://charts.heartex.com/"
-  chart      = "label-studio"
-  version    = "1.1.4"
+  # repository = "https://charts.heartex.com/"
+  # chart      = "label-studio"
+  # version    = "1.1.4"
+
+  # chart = "${path.module}/../../label-studio-charts/heartex/label-studio"
+
+  chart   = "oci://ghcr.io/epoch8/label-studio-charts/label-studio/label-studio"
+  version = "1.1.8-rq0"
 
   namespace = var.k8s_namespace
 

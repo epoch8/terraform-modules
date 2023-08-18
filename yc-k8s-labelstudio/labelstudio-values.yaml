@@ -1,4 +1,8 @@
 global:
+  image:
+    repository: ghcr.io/epoch8/label-studio/label-studio
+    tag: 1.8.0rq0-fix.1
+
   pgConfig:
     host: "${db_host}"
     port: ${db_port}
@@ -39,5 +43,24 @@ app:
           - ${ls_domain}
         secretName: ${ls_domain}-tls
 
+rqworker:
+  queues:
+    default:
+      replicas: 1
+      args: '"default", "critical", "high", "low"'
+      resources:
+        requests:
+          cpu: "${app_resources.requests.cpu}"
+          memory: "${app_resources.requests.memory}"
+        limits:
+          cpu: "${app_resources.limits.cpu}"
+          memory: "${app_resources.limits.memory}"
+    critical: null
+    high: null
+    low: null
+
 postgresql:
   enabled: false
+
+redis:
+  enabled: true
