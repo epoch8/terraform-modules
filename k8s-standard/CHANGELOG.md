@@ -1,3 +1,7 @@
+# 2023-08-18
+
+* Исправлен PVC для loki-stack
+
 # 2023-08-16
 
 * Для ingress_nginx выставлен параметр `enable-underscores-in-headers = true`
