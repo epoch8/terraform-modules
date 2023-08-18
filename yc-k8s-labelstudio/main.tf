@@ -49,13 +49,6 @@ variable "yc_mdb_postgresql_cluster" {
   })
 }
 
-# variable "yc_s3_root_key" {
-#   type = object({
-#     access_key = string
-#     secret_key = string
-#   })
-# }
-
 variable "admin_email" {
   type    = string
   default = "admin@epoch8.co"
@@ -103,78 +96,23 @@ resource "random_string" "labelstudio_admin_user_password" {
   special = false
 }
 
-resource "kubernetes_secret_v1" "labelstudio" {
-  metadata {
-    name      = "${var.project}-labelstudio"
-    namespace = var.k8s_namespace
+module "labelstudio" {
+  source = "${path.module}/../k8s-labelstudio"
+
+  project               = var.project
+  k8s_namespace         = var.k8s_namespace
+  labelstudio_resources = var.labelstudio_resources
+
+  database = {
+    host     = var.yc_mdb_postgresql_cluster.fqdn
+    port     = 6432
+    dbname   = yandex_mdb_postgresql_database.labelstudio_db.name
+    user     = yandex_mdb_postgresql_user.labelstudio_user.name
+    password = random_string.labelstudio_password.result
   }
-
-  data = {
-    "db_pass" = yandex_mdb_postgresql_user.labelstudio_user.password
-  }
 }
 
-resource "random_string" "labelstudio_admin_password" {
-  length  = 10
-  special = false
-}
-
-resource "random_string" "labelstudio_admin_token" {
-  length  = 10
-  special = false
-}
-
-resource "helm_release" "labelstudio" {
-  name = "${var.project}-labelstudio"
-
-  # repository = "https://charts.heartex.com/"
-  # chart      = "label-studio"
-  # version    = "1.1.4"
-
-  # chart = "${path.module}/../../label-studio-charts/heartex/label-studio"
-
-  chart   = "oci://ghcr.io/epoch8/label-studio-charts/label-studio/label-studio"
-  version = "1.1.8-rq0"
-
-  namespace = var.k8s_namespace
-
-  values = [
-    templatefile(
-      "${path.module}/labelstudio-values.yaml",
-      {
-        db_host = var.yc_mdb_postgresql_cluster.fqdn
-        db_port = 6432
-        db_name = yandex_mdb_postgresql_database.labelstudio_db.name
-        db_user = yandex_mdb_postgresql_user.labelstudio_user.name
-
-        db_pass_secret_name = kubernetes_secret_v1.labelstudio.metadata.0.name
-        db_pass_secret_key  = "db_pass"
-
-        ls_admin_username = var.admin_email
-        ls_admin_password = random_string.labelstudio_admin_password.result
-        ls_admin_token    = random_string.labelstudio_admin_token.result
-
-        ls_domain = "labelstudio.${var.base_domain}"
-
-        app_resources = var.labelstudio_resources
-      }
-    )
-  ]
-}
 
 output "config" {
-  value = {
-    db = {
-      host     = var.yc_mdb_postgresql_cluster.fqdn
-      port     = 6432
-      db       = yandex_mdb_postgresql_database.labelstudio_db.name
-      user     = yandex_mdb_postgresql_user.labelstudio_user.name
-      password = random_string.labelstudio_password.result
-    }
-    public_uri     = "https://labelstudio.${var.base_domain}"
-    internal_uri   = "http://${helm_release.labelstudio.metadata.0.name}-ls-app.${var.k8s_namespace}.svc.cluster.local"
-    admin_username = var.admin_email
-    admin_password = random_string.labelstudio_admin_password.result
-    token          = random_string.labelstudio_admin_token.result
-  }
+  value = module.labelstudio.config
 }
