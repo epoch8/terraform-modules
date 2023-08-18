@@ -1,3 +1,4 @@
-persistence:
-  enabled: true
-  size: 50Gi
+loki:
+  persistence:
+    enabled: true
+    size: 50Gi
