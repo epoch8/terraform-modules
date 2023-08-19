@@ -19,6 +19,20 @@ global:
 
     LABEL_STUDIO_DISABLE_SIGNUP_WITHOUT_LINK: "true"
 
+  %{ if gcs_persistence != null }
+  persistence:
+    enabled: true
+    type: gcs
+    config:
+      gcs:
+        projectID: ${ gcs_persistence.project }
+        bucket: ${ gcs_persistence.bucket }
+        folder: ${ gcs_persistence.prefix }
+  %{ else }
+  persistence:
+    enabled: false
+  %{ endif ~}
+
 app:
   deploymentStrategy:
     type: Recreate

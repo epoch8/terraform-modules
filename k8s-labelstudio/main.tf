@@ -57,6 +57,17 @@ variable "labelstudio_resources" {
   }
 }
 
+variable "labelstudio_gcs_persistence" {
+  default = null
+  type = object({
+    project = string
+    bucket  = string
+    prefix  = string
+  })
+}
+
+####################
+
 resource "kubernetes_secret_v1" "labelstudio" {
   metadata {
     name      = "${var.project}-labelstudio"
@@ -111,8 +122,17 @@ resource "helm_release" "labelstudio" {
         ls_domain = "labelstudio.${var.base_domain}"
 
         app_resources = var.labelstudio_resources
+
+        gcs_persistence = var.labelstudio_gcs_persistence
       }
     )
+  ]
+}
+
+output "k8s_sa" {
+  value = [
+    "${var.k8s_namespace}/${helm_release.labelstudio.metadata.0.name}-ls-app",
+    "${var.k8s_namespace}/${helm_release.labelstudio.metadata.0.name}-ls-rqworker",
   ]
 }
 
