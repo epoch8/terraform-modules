@@ -1,0 +1,52 @@
+nameOverride: "${name}"
+fullnameOverride: "${name}"
+
+domain: "${ingress_host}"
+
+image:
+  repository: ghcr.io/epoch8/metabase-clickhouse
+  tag: "v0.47.0ch-1.2.1"
+
+env:
+  - name: MB_DB_TYPE
+    value: postgres
+  - name: MB_DB_HOST
+    value: "${db_host}"
+  - name: MB_DB_PORT
+    value: "${db_port}"
+  - name: MB_DB_DBNAME
+    value: "${db_dbname}"
+  - name: MB_DB_USER
+    value: "${db_username}"
+  - name: MB_DB_PASS
+    value: "${db_password}"
+
+
+# Port that container is using
+port: 3000
+
+livenessProbe:
+  failureThreshold: 10
+
+
+ingress:
+  enabled: true
+
+  nginx: true
+
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/proxy-body-size: 16m
+  tls:
+   - secretName: ${ingress_host}
+     hosts:
+       - ${ingress_host}
+
+resources:
+  limits:
+    cpu: 2
+    memory: 2Gi
+  requests:
+    cpu: 100m
+    memory: 512Mi
