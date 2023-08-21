@@ -136,6 +136,14 @@ output "k8s_sa" {
   }
 }
 
+locals {
+  public_uri     = "https://labelstudio.${var.base_domain}"
+  internal_uri   = "http://${helm_release.labelstudio.metadata.0.name}-ls-app.${var.k8s_namespace}.svc.cluster.local"
+  admin_username = var.admin_email
+  admin_password = random_string.labelstudio_admin_password.result
+  token          = random_string.labelstudio_admin_token.result
+}
+
 output "config" {
   value = {
     db = {
