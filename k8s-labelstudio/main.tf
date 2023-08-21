@@ -130,10 +130,10 @@ resource "helm_release" "labelstudio" {
 }
 
 output "k8s_sa" {
-  value = [
-    "${var.k8s_namespace}/${helm_release.labelstudio.metadata.0.name}-ls-app",
-    "${var.k8s_namespace}/${helm_release.labelstudio.metadata.0.name}-ls-rqworker",
-  ]
+  value = {
+    app      = "${var.k8s_namespace}/${helm_release.labelstudio.metadata.0.name}-ls-app",
+    rqworker = "${var.k8s_namespace}/${helm_release.labelstudio.metadata.0.name}-ls-rqworker",
+  }
 }
 
 output "config" {
