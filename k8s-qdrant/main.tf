@@ -42,37 +42,38 @@ resource "helm_release" "qdrant" {
       limits:
         cpu: 1
         memory: 2Gi
-    EOF
 
-    # ingress:
-    #   enabled: true
+    ingress:
+      enabled: true
 
-    #   annotations:
-    #     kubernetes.io/ingress.class: nginx
-    #     cert-manager.io/cluster-issuer: letsencrypt
-    #     nginx.ingress.kubernetes.io/proxy-body-size: 100m
+      annotations:
+        kubernetes.io/ingress.class: nginx
+        cert-manager.io/cluster-issuer: letsencrypt
+        nginx.ingress.kubernetes.io/proxy-body-size: 100m
       
-    #   hosts:
-    #     - host: qdrant.${var.project}.${var.base_domain}
-    #       paths:
-    #         - path: /
-    #           pathType: Prefix
-    #           servicePort: 6333        
+      hosts:
+        - host: qdrant.${var.project}.${var.base_domain}
+          paths:
+            - path: /
+              pathType: Prefix
+              servicePort: 6333        
 
-    #   tls:
-    #     - hosts:
-    #         - qdrant.${var.project}.${var.base_domain}
-    #       secretName: ${var.project}-qdrant-tls
+      tls:
+        - hosts:
+            - qdrant.${var.project}.${var.base_domain}
+          secretName: ${var.project}-qdrant-tls
 
-    # config:
-    #   service:
-    #     api_key: ${random_string.api_key.result}
+    config:
+      service:
+        api_key: ${random_string.api_key.result}
+
+    EOF
   ]
 }
 
-# output "dns" {
-#   value = "qdrant.${var.project}.${var.base_domain}"
-# }
+output "dns" {
+  value = "qdrant.${var.project}.${var.base_domain}"
+}
 
 output "internal_uri" {
   value = "http://${helm_release.qdrant.metadata.0.name}:6333"
@@ -81,7 +82,7 @@ output "internal_uri" {
 output "config" {
   value = {
     internal_uri = "http://${helm_release.qdrant.metadata.0.name}:6333"
-    # host    = "qdrant.${var.project}.${var.base_domain}"
-    # api_key = random_string.api_key.result
+    external_uri = "https://qdrant.${var.project}.${var.base_domain}"
+    api_key      = random_string.api_key.result
   }
 }
