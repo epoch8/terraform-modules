@@ -1,0 +1,25 @@
+ingress:
+  enabled: true
+  hosts:
+    - ${ingress_host}
+  path: /
+
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+    networking.gke.io/managed-certificates: metabase-managed-certificate
+
+database:
+  type: postgres
+  host: ${db_host}
+  port: 5432
+  dbname: ${db_dbname}
+  username: ${db_username}
+  password: ${db_password}
+
+resources:
+  limits:
+    memory: 1Gi
+    cpu: 2
+  requests:
+    memory: 1Gi
+    cpu: 0.5
