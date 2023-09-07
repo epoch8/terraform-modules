@@ -97,11 +97,12 @@ resource "random_string" "labelstudio_admin_user_password" {
 }
 
 module "labelstudio" {
-  source = "${path.module}/../k8s-labelstudio"
+  source = "../k8s-labelstudio"
 
   project               = var.project
   k8s_namespace         = var.k8s_namespace
   labelstudio_resources = var.labelstudio_resources
+  base_domain           = var.base_domain
 
   database = {
     host     = var.yc_mdb_postgresql_cluster.fqdn

@@ -58,6 +58,8 @@ app:
         secretName: ${ls_domain}-tls
 
 rqworker:
+  enabled: true
+
   queues:
     default:
       replicas: 1
@@ -72,6 +74,9 @@ rqworker:
     critical: null
     high: null
     low: null
+  
+  serviceAccount:
+    create: true
 
 postgresql:
   enabled: false
