@@ -29,8 +29,22 @@ global:
         bucket: ${ gcs_persistence.bucket }
         folder: ${ gcs_persistence.prefix }
   %{ else }
+  %{ if s3_persistence != null }
+  persistence:
+    enabled: true
+    type: s3
+    config:
+      s3:
+        accessKey: "${ s3_persistence.access_key }"
+        secretKey: "${ s3_persistence.secret_key }"
+        bucket: "${ s3_persistence.bucket }"
+        region: "${ s3_persistence.region }"
+        folder: "${ s3_persistence.prefix }"
+        endpointUrl: "${ s3_persistence.endpoint }"
+  %{ else }
   persistence:
     enabled: false
+  %{ endif ~}
   %{ endif ~}
 
 app:
@@ -51,6 +65,7 @@ app:
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
       nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+      nginx.ingress.kubernetes.io/proxy-body-size: 16m
     host: ${ls_domain}
     tls:
       - hosts:

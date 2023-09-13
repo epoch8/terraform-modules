@@ -66,6 +66,18 @@ variable "labelstudio_gcs_persistence" {
   })
 }
 
+variable "labelstudio_s3_persistence" {
+  default = null
+  type = object({
+    access_key = string
+    secret_key = string
+    region     = string
+    bucket     = string
+    prefix     = string
+    endpoint   = string
+  })
+}
+
 ####################
 
 resource "kubernetes_secret_v1" "labelstudio" {
@@ -124,6 +136,7 @@ resource "helm_release" "labelstudio" {
         app_resources = var.labelstudio_resources
 
         gcs_persistence = var.labelstudio_gcs_persistence
+        s3_persistence  = var.labelstudio_s3_persistence
       }
     )
   ]
