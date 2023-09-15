@@ -5,7 +5,7 @@ domain: "${ingress_host}"
 
 image:
   repository: nocodb/nocodb
-  tag: "0.109.7"
+  tag: "0.111.4"
 
 env:
 %{ if !use_sqlite }
