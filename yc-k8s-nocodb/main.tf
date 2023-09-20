@@ -103,6 +103,12 @@ resource "yandex_storage_bucket" "media" {
     type        = "Group"
     permissions = ["READ"]
   }
+
+  cors_rule {
+    allowed_headers = [ "*" ]
+    allowed_methods = [ "GET", "PUT", "POST", "DELETE", "HEAD" ]
+    allowed_origins = [ "*" ]
+  }
 }
 
 resource "helm_release" "nocodb" {

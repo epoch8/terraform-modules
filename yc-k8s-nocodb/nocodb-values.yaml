@@ -17,6 +17,8 @@ env:
     value: "${admin_email}"
   - name: NC_ADMIN_PASSWORD
     value: "${admin_password}"
+  - name: DB_QUERY_LIMIT_DEFAULT
+    value: "100"
 
 %{ if !use_sqlite }
 configs:
