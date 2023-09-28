@@ -127,7 +127,7 @@ output "internal_uri" {
 output "config" {
   value = {
     internal_uri = "http://${helm_release.qdrant.metadata.0.name}:6333"
-    external_uri = var.ingress_enabled ? "https://qdrant.${local.dns_name_prefix}${var.base_domain}" : null
+    external_uri = var.ingress_enabled ? "https://qdrant.${local.dns_name_prefix}${var.base_domain}:443" : null
     api_key      = var.ingress_enabled ? random_string.api_key.0.result : null
   }
 }
