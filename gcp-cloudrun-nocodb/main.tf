@@ -1,11 +1,46 @@
-variable "slug" {}
-variable "gcp_project_name" {}
-variable "gcp_location" {}
-variable "google_sql_database_instance_name" {}
-variable "google_sql_database_instance_ip_address" {}
+variable "slug" {
+  type = string
+  default = ""
+}
+
+variable "gcp_project_name" {
+  type = string
+}
+
+variable "gcp_location" {
+  type = string
+}
+
+variable "google_sql_database_instance_name" {
+  type = string
+}
+
+variable "gcp_dns_zone" {
+  type    = string
+  default = "epoch8-dev"
+}
+
+variable "admin_email" {
+  type = string
+  default = "admin@epoch8.co"
+}
+
+####################
+
+locals {
+  slug_dash = var.slug != "" ? "${var.slug}-" : ""
+  slug_dot = var.slug != "" ? "${var.slug}." : ""
+}
+
+####################
+
+
+data "google_sql_database_instance" "db" {
+  name = var.google_sql_database_instance_name
+}
 
 resource "google_service_account" "default" {
-  account_id = "${var.slug}-nocodb"
+  account_id = "${local.slug_dash}nocodb"
 }
 
 resource "random_string" "nocodb_db_password" {
@@ -36,7 +71,7 @@ resource "random_string" "nocodb_jwt_secret" {
 }
 
 resource "google_cloud_run_v2_service" "nocodb" {
-  name     = "${var.slug}-nocodb"
+  name     = "${local.slug_dash}nocodb"
   location = var.gcp_location
   ingress  = "INGRESS_TRAFFIC_ALL"
   project  = var.gcp_project_name
@@ -49,11 +84,11 @@ resource "google_cloud_run_v2_service" "nocodb" {
     }
 
     containers {
-      image = "nocodb/nocodb:0.105.3"
+      image = "nocodb/nocodb:0.202.9"
 
       env {
         name  = "NC_DB"
-        value = "pg://${var.google_sql_database_instance_ip_address}:5432?u=${google_sql_user.nocodb.name}&p=${random_string.nocodb_db_password.result}&d=${google_sql_database.nocodb.name}"
+        value = "pg://${data.google_sql_database_instance.db.public_ip_address}:5432?u=${google_sql_user.nocodb.name}&p=${random_string.nocodb_db_password.result}&d=${google_sql_database.nocodb.name}"
       }
 
       env {
@@ -63,7 +98,7 @@ resource "google_cloud_run_v2_service" "nocodb" {
 
       env {
         name  = "NC_ADMIN_EMAIL"
-        value = "admin@epoch8.co"
+        value = var.admin_email
       }
 
       env {
@@ -101,7 +136,7 @@ resource "google_cloud_run_v2_service" "nocodb" {
 
 resource "google_cloud_run_domain_mapping" "default" {
   location = var.gcp_location
-  name     = "nocodb.${var.slug}.${trimsuffix(data.google_dns_managed_zone.epoch8_dev.dns_name, ".")}"
+  name     = "nocodb.${local.slug_dot}${trimsuffix(data.google_dns_managed_zone.default.dns_name, ".")}"
 
   metadata {
     namespace = var.gcp_project_name
@@ -112,13 +147,13 @@ resource "google_cloud_run_domain_mapping" "default" {
   }
 }
 
-data "google_dns_managed_zone" "epoch8_dev" {
-  name = "epoch8-dev"
+data "google_dns_managed_zone" "default" {
+  name = var.gcp_dns_zone
 }
 
 resource "google_dns_record_set" "default" {
-  name         = "nocodb.${var.slug}.${data.google_dns_managed_zone.epoch8_dev.dns_name}"
-  managed_zone = data.google_dns_managed_zone.epoch8_dev.name
+  name         = "nocodb.${local.slug_dot}${data.google_dns_managed_zone.default.dns_name}"
+  managed_zone = data.google_dns_managed_zone.default.name
   type         = google_cloud_run_domain_mapping.default.status[0].resource_records[0].type
   ttl          = 300
 
@@ -127,8 +162,8 @@ resource "google_dns_record_set" "default" {
 
 output "config" {
   value = {
-    uri      = "http://nocodb.${var.slug}.${trimsuffix(data.google_dns_managed_zone.epoch8_dev.dns_name, ".")}"
-    user     = "admin@epoch8.co"
+    uri      = "http://nocodb.${local.slug_dot}${trimsuffix(data.google_dns_managed_zone.default.dns_name, ".")}"
+    user     = var.admin_email
     password = random_string.nocodb_admin_password.result
   }
 }
