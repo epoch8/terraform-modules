@@ -84,7 +84,7 @@ resource "google_cloud_run_v2_service" "nocodb" {
     }
 
     containers {
-      image = "nocodb/nocodb:0.202.9"
+      image = "nocodb/nocodb:0.204.0"
 
       env {
         name  = "NC_DB"
