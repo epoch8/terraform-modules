@@ -3,6 +3,11 @@ variable "slug" {
   default = ""
 }
 
+variable "subdomain" {
+  type = string
+  default = ""
+}
+
 variable "gcp_project_name" {
   type = string
 }
@@ -29,7 +34,7 @@ variable "admin_email" {
 
 locals {
   slug_dash = var.slug != "" ? "${var.slug}-" : ""
-  slug_dot = var.slug != "" ? "${var.slug}." : ""
+  slug_dot = var.subdomain != "" ? "${var.subdomain}." : ""
 }
 
 ####################
