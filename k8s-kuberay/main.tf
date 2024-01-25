@@ -17,7 +17,7 @@ resource "helm_release" "kuberay" {
   repository = "https://ray-project.github.io/kuberay-helm/"
   chart      = "kuberay-operator"
   namespace  = kubernetes_namespace.kuberay.metadata[0].name
-  version    = "0.6.0"
+  version    = "1.0.0"
   values = [
     jsonencode({
     })
