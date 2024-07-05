@@ -3,6 +3,21 @@ variable "kube_prometheus_stack_version" {
   default = "48.2.2"
 }
 
+variable "prometheus_resources" {
+  type = object({
+    requests = object({
+      cpu    = string
+      memory = string
+    })
+    limits = object({
+      cpu    = string
+      memory = string
+    })
+  })
+
+  default = null
+}
+
 resource "random_string" "grafana_admin_password" {
   length  = 15
   special = false
@@ -34,6 +49,8 @@ resource "helm_release" "kube_prometheus_stack" {
       admin_password = random_string.grafana_admin_password.result
       domain         = local.grafana_domain
       loki_enabled   = var.loki_enabled
+
+      prometheus_resources = var.prometheus_resources
     })
   ]
 }

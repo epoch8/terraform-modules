@@ -11,9 +11,16 @@ prometheus:
             requests:
               storage: 50Gi
 
+    %{ if prometheus_resources != null }
+    resources: ${ jsonencode(prometheus_resources) }
+    %{ endif }
+
 grafana:
   adminUser: "admin"
   adminPassword: ${admin_password}
+
+  deploymentStrategy:
+    type: Recreate
 
   ingress:
     enabled: true
