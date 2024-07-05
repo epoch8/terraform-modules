@@ -11,6 +11,9 @@ prometheus:
             requests:
               storage: 50Gi
 
+    retention: ""
+    retentionSize: 40GB
+
     %{ if prometheus_resources != null }
     resources: ${ jsonencode(prometheus_resources) }
     %{ endif }
