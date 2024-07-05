@@ -15,11 +15,6 @@ variable "kp_namespace" {
   default = "kube-prometheus-stack"
 }
 
-variable "loki_enabled" {
-  type = bool
-  default = false
-}
-
 variable "nginx_resources" {
   type = object({
     requests = object({

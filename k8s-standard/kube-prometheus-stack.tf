@@ -1,3 +1,8 @@
+variable "kube_prometheus_stack_version" {
+  type    = string
+  default = "48.2.2"
+}
+
 resource "random_string" "grafana_admin_password" {
   length  = 15
   special = false
@@ -20,7 +25,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "kube-prometheus-stack"
-  version    = "48.2.2"
+  version    = var.kube_prometheus_stack_version
 
   namespace = kubernetes_namespace.kube-prometheus-stack.metadata.0.name
 
@@ -51,7 +56,7 @@ resource "kubernetes_config_map_v1" "loki_logs_dashboard" {
   metadata {
     name      = "loki-logs-dashboard-configmap"
     namespace = kubernetes_namespace.kube-prometheus-stack.metadata.0.name
-    labels    = {
+    labels = {
       grafana_dashboard = "1"
     }
   }
