@@ -1,3 +1,8 @@
+variable "ingress_nginx_chart_version" {
+  type = string
+  default = "4.7.1"
+}
+
 resource "kubernetes_namespace_v1" "ingress_nginx" {
   metadata {
     name = "ingress-nginx"
@@ -9,7 +14,7 @@ resource "helm_release" "ingress_nginx" {
 
   repository = "https://kubernetes.github.io/ingress-nginx"
   chart      = "ingress-nginx"
-  version    = "4.7.1"
+  version    = var.ingress_nginx_chart_version
 
   namespace = kubernetes_namespace_v1.ingress_nginx.metadata.0.name
 
