@@ -1,0 +1,59 @@
+database:
+  type: postgres
+  host: ${db_host}
+  port: ${db_port}
+  dbname: ${db_dbname}
+  username: ${db_username}
+  password: ${db_password}
+
+image:
+  repository: metabase/metabase
+  tag: "v0.47.0"
+
+ingress:
+  enabled: true
+  hosts:
+    - ${ingress_host}
+  path: /
+
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt
+  tls:
+  - secretName: ${ingress_host}
+    hosts:
+      - ${ingress_host}
+
+pluginsDirectory: /plugins
+
+extraInitContainers:
+- name: download-modules
+  image: "curlimages/curl:7.70.0"
+  imagePullPolicy: "IfNotPresent"
+  volumeMounts:
+    - name: plugins
+      mountPath: /plugins
+  workingDir: /plugins
+  command:
+    - "/bin/sh"
+    - "-ec"
+    - |
+      curl -Lso /plugins/athena.metabase-driver.jar \
+      https://github.com/dacort/metabase-athena-driver/releases/download/v1.4.0/athena.metabase-driver.jar
+
+extraVolumeMounts:
+- name: plugins
+  mountPath: /plugins
+  readOnly: false
+
+extraVolumes:
+- name: plugins
+  emptyDir: {}
+
+resources:
+  limits:
+    memory: 2Gi
+    cpu: 4
+  requests:
+    memory: 1Gi
+    cpu: 0.1
