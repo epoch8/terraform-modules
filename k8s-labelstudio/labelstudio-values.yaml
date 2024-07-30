@@ -28,6 +28,7 @@ global:
         projectID: ${ gcs_persistence.project }
         bucket: ${ gcs_persistence.bucket }
         folder: ${ gcs_persistence.prefix }
+        applicationCredentialsJSON: ${ jsonencode(gcs_persistence.application_credentials_json) }
   %{ else }
   %{ if s3_persistence != null }
   persistence:

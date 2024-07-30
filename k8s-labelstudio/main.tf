@@ -60,9 +60,10 @@ variable "labelstudio_resources" {
 variable "labelstudio_gcs_persistence" {
   default = null
   type = object({
-    project = string
-    bucket  = string
-    prefix  = string
+    project                      = string
+    bucket                       = string
+    prefix                       = string
+    application_credentials_json = string
   })
 }
 
