@@ -11,6 +11,8 @@ variable "labelstudio_cleaner_retention_days" {
 }
 
 resource "kubernetes_cron_job_v1" "labelstudio_cleaner" {
+  count = var.labelstudio_cleaner_enabled ? 1 : 0
+
   metadata {
     name      = "${var.project}-labelstudio-cleaner"
     namespace = var.k8s_namespace
