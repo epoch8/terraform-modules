@@ -92,7 +92,7 @@ resource "helm_release" "nocodb" {
 
 output "config" {
   value = {
-    nocodb_url = "https://nocodb.${var.name}.epoch8.co/"
+    nocodb_url = "https://nocodb.${var.base_domain}/"
 
     # nocodb_db = "postgres://${yandex_mdb_postgresql_user.nocodb_user.0.name}:${random_string.nocodb_password.0.result}@${var.yc_mdb_postgresql_cluster.fqdn}:6432/${yandex_mdb_postgresql_database.nocodb_db.0.name}"
 
