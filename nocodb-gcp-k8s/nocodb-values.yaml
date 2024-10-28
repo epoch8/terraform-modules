@@ -5,14 +5,9 @@ domain: "${ingress_host}"
 
 image:
   repository: nocodb/nocodb
-  tag: "0.111.4"
+  tag: "${nocodb_version}"
 
 env:
-%{ if !use_sqlite }
-  - name: NC_DB_JSON_FILE
-    value: /configs/conn.json
-%{ endif }
-
   - name: NC_ADMIN_EMAIL
     value: "${admin_email}"
   - name: NC_ADMIN_PASSWORD
@@ -20,7 +15,6 @@ env:
   - name: DB_QUERY_LIMIT_DEFAULT
     value: "100"
 
-%{ if !use_sqlite }
 configs:
   - name: conn.json
     value: |
@@ -40,14 +34,6 @@ configs:
           }
         }
       }
-%{ endif }
-
-%{ if use_sqlite }
-volumes:
-  - name: data
-    size: 1Gi
-    mountPath: /usr/app/data/
-%{ endif }
 
 # Port that container is using
 port: 8080
