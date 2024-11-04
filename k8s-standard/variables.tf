@@ -1,8 +1,5 @@
-variable "google_dns_managed_zone" {
-  type = object({
-    name     = string
-    dns_name = string
-  })
+variable "base_domain" {
+  type = string
 }
 
 variable "admin_email" {

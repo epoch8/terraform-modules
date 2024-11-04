@@ -2,8 +2,6 @@
 
 * Устанавливает ingress-nginx
 * Устанавливает cert-manager
-* Прописывает DNS ingress-nginx.XXX.epoch8.dev
-* Прописывает DNS *.XXX.epoch8.dev
 * Устанавливает kube-prometheus-stack
 * Устанавливает loki-stack
 
@@ -11,7 +9,6 @@
 
 Providers:
 
-* `google`
 * `kubernetes`
 * `helm`
 
