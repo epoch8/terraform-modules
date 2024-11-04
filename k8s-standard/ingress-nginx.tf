@@ -30,6 +30,12 @@ resource "helm_release" "ingress_nginx" {
         autoscaling = {
           enabled = true
         }
+        metrics = {
+          enabled = true
+          serviceMonitor = {
+            enabled = true
+          }
+        }
         config = {
           enable-underscores-in-headers = true
         }

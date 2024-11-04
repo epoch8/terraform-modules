@@ -1,0 +1,106 @@
+resource "random_string" "nocodb_password" {
+  length  = 16
+  special = false
+}
+
+data "google_sql_database_instance" "nocodb_db_instance" {
+  name = var.gcp_sql_database_instance
+}
+
+resource "google_sql_user" "nocodb_user" {
+  instance = data.google_sql_database_instance.nocodb_db_instance.name
+
+  name     = "${local.name_with_underlines}_nocodb"
+  password = random_string.nocodb_password.result
+}
+
+resource "google_sql_database" "nocodb_db" {
+  name     = "${local.name_with_underlines}_nocodb"
+  instance = data.google_sql_database_instance.nocodb_db_instance.name
+}
+
+resource "random_string" "nocodb_admin_user_password" {
+  length  = 16
+  special = false
+}
+
+# TODO add GCS bucket and service account for media storage
+# resource "yandex_iam_service_account" "nocodb" {
+#   name = "${var.name}-nocodb"
+# }
+
+# # Create service account key
+# resource "yandex_iam_service_account_static_access_key" "nocodb_key" {
+#   service_account_id = yandex_iam_service_account.nocodb.id
+# }
+
+# resource "yandex_storage_bucket" "media" {
+#   access_key = var.yc_s3_root_key.access_key
+#   secret_key = var.yc_s3_root_key.secret_key
+#   bucket     = "${var.name}-nocodb-media"
+
+#   grant {
+#     id          = yandex_iam_service_account.nocodb.id
+#     type        = "CanonicalUser"
+#     permissions = ["FULL_CONTROL"]
+#   }
+
+#   grant {
+#     uri         = "http://acs.amazonaws.com/groups/global/AllUsers"
+#     type        = "Group"
+#     permissions = ["READ"]
+#   }
+
+#   cors_rule {
+#     allowed_headers = [ "*" ]
+#     allowed_methods = [ "GET", "PUT", "POST", "DELETE", "HEAD" ]
+#     allowed_origins = [ "*" ]
+#   }
+# }
+
+resource "helm_release" "nocodb" {
+  name = "${var.name}-nocodb"
+
+  repository = "https://epoch8.github.io/helm-charts/"
+  chart      = "simple-app"
+  version    = "0.14.0"
+
+  namespace = var.k8s_namespace
+
+  values = [
+    templatefile(
+      "${path.module}/nocodb-values.yaml",
+      {
+        ingress_host = "nocodb.${var.base_domain}"
+
+        name = "${var.name}-nocodb"
+
+        nocodb_version = var.nocodb_version
+
+        db_host     = data.google_sql_database_instance.nocodb_db_instance.public_ip_address
+        db_port     = 5432
+        db_dbname   = google_sql_database.nocodb_db.name
+        db_username = google_sql_user.nocodb_user.name
+        db_password = random_string.nocodb_password.result
+
+        admin_email    = var.admin_email
+        admin_password = random_string.nocodb_admin_user_password.result
+      }
+    )
+  ]
+}
+
+output "config" {
+  value = {
+    nocodb_url = "https://nocodb.${var.base_domain}/"
+
+    # nocodb_db = "postgres://${yandex_mdb_postgresql_user.nocodb_user.0.name}:${random_string.nocodb_password.0.result}@${var.yc_mdb_postgresql_cluster.fqdn}:6432/${yandex_mdb_postgresql_database.nocodb_db.0.name}"
+
+    admin_email    = var.admin_email
+    admin_password = random_string.nocodb_admin_user_password.result
+
+    # s3_bucket     = yandex_storage_bucket.media.bucket
+    # s3_access_key = yandex_iam_service_account_static_access_key.nocodb_key.access_key
+    # s3_secret_key = nonsensitive(yandex_iam_service_account_static_access_key.nocodb_key.secret_key)
+  }
+}

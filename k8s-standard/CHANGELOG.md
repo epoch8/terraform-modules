@@ -2,6 +2,15 @@
 
 * Удалено создание DNS записей в google
 
+# 2024-10-19
+
+* Включен мониторинг в ingress-nginx
+
+# 2024-07-05.4
+
+* Добавлена параметризация версий для cert-manager, ingress-nginx, prometheus,
+  loki
+
 # 2023-08-18
 
 * Исправлен PVC для loki-stack

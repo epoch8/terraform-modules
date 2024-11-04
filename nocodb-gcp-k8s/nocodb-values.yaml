@@ -1,0 +1,72 @@
+nameOverride: "${name}"
+fullnameOverride: "${name}"
+
+domain: "${ingress_host}"
+
+image:
+  repository: nocodb/nocodb
+  tag: "${nocodb_version}"
+
+env:
+  - name: NC_ADMIN_EMAIL
+    value: "${admin_email}"
+  - name: NC_ADMIN_PASSWORD
+    value: "${admin_password}"
+  - name: DB_QUERY_LIMIT_DEFAULT
+    value: "100"
+
+configs:
+  - name: conn.json
+    value: |
+      {
+        "client": "pg",
+        "connection": {
+          "host": "${db_host}",
+          "port": "${db_port}",
+          "user": "${db_username}",
+          "password": "${db_password}",
+          "database": "${db_dbname}",
+          "ssl": {
+            "rejectUnauthorized": false,
+            "ca": "-",
+            "key": "",
+            "cert": ""
+          }
+        }
+      }
+
+# Port that container is using
+port: 8080
+
+livenessProbe:
+  httpGet:
+    path: /dashboard/
+    port: http
+  failureThreshold: 10
+
+readinessProbe:
+  httpGet:
+    path: /dashboard/
+    port: http
+
+ingress:
+  enabled: true
+
+  nginx: true
+
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/proxy-body-size: 16m
+  tls:
+   - secretName: ${ingress_host}
+     hosts:
+       - ${ingress_host}
+
+resources:
+  limits:
+    cpu: 1
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 512Mi
