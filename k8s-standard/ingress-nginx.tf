@@ -9,11 +9,6 @@ resource "kubernetes_namespace_v1" "ingress_nginx" {
   }
 }
 
-variable "ingress_nginx_type" {
-  type    = string
-  default = "LoadBalancer"
-}
-
 resource "helm_release" "ingress_nginx" {
   name = "ingress-nginx"
 
@@ -39,9 +34,6 @@ resource "helm_release" "ingress_nginx" {
         config = {
           enable-underscores-in-headers = true
         }
-        service = {
-          type = var.ingress_nginx_type
-        }
       }
     }),
   ]
@@ -54,6 +46,6 @@ data "kubernetes_service_v1" "ingress_nginx" {
   }
 }
 
-locals {
-  ingress_domain = "ingress-nginx.${var.base_domain}"
+output "ingress_ip" {
+  value = data.kubernetes_service_v1.ingress_nginx.status.0.load_balancer.0.ingress.0.ip
 }

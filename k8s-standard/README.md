@@ -17,4 +17,4 @@ Providers:
 Сначала нужно создать helm-релиз для cert_manager
 
 1. `terraform apply -target module.yc_k8s_standard.helm_release.cert_manager`
-1. `terraform apply`
+2. `terraform apply`
