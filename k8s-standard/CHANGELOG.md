@@ -1,3 +1,23 @@
+# 2024-11-11
+
+* Создание DNS записей в google вынесено в модуль [gcp-dns-entry](..%2Fgcp-dns-entry). Пример:
+
+```
+provider "google" {
+  project = "e8-gke"
+}
+module "my_project_ingress_dns" {
+  source = "git@github.com:epoch8/terraform-modules.git//gcp-dns-entry?ref=2024-11-11"
+
+  managed_zone_name = "epoch8-dev"
+  dns_name          = "my_project.epoch8.dev."
+  ingress_ip        = module.my_project_k8s_standard.ingress_ip
+}
+```
+
+
+ 
+
 # 2024-10-19
 
 * Включен мониторинг в ingress-nginx

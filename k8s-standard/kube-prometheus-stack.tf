@@ -30,9 +30,7 @@ resource "kubernetes_namespace" "kube-prometheus-stack" {
 }
 
 locals {
-  # strip trailing dot
-  grafana_base_domain = replace(var.google_dns_managed_zone.dns_name, "/\\.$/", "")
-  grafana_domain      = "grafana.${local.grafana_base_domain}"
+  grafana_domain      = "grafana.${var.base_domain}"
 }
 
 resource "helm_release" "kube_prometheus_stack" {
@@ -52,18 +50,6 @@ resource "helm_release" "kube_prometheus_stack" {
 
       prometheus_resources = var.prometheus_resources
     })
-  ]
-}
-
-resource "google_dns_record_set" "grafana" {
-  name = "${local.grafana_domain}."
-  type = "CNAME"
-  ttl  = 300
-
-  managed_zone = var.google_dns_managed_zone.name
-
-  rrdatas = [
-    google_dns_record_set.ingress_nginx.name
   ]
 }
 

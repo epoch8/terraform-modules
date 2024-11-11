@@ -2,8 +2,6 @@
 
 * Устанавливает ingress-nginx
 * Устанавливает cert-manager
-* Прописывает DNS ingress-nginx.XXX.epoch8.dev
-* Прописывает DNS *.XXX.epoch8.dev
 * Устанавливает kube-prometheus-stack
 * Устанавливает loki-stack
 
@@ -11,7 +9,6 @@
 
 Providers:
 
-* `google`
 * `kubernetes`
 * `helm`
 
@@ -20,4 +17,4 @@ Providers:
 Сначала нужно создать helm-релиз для cert_manager
 
 1. `terraform apply -target module.yc_k8s_standard.helm_release.cert_manager`
-1. `terraform apply`
+2. `terraform apply`
