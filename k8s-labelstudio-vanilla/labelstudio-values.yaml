@@ -1,0 +1,101 @@
+global:
+  image:
+    repository: heartexlabs/label-studio
+    tag: 1.14.0
+
+  pgConfig:
+    host: "${db_host}"
+    port: ${db_port}
+    userName: "${db_user}"
+    dbName: "${db_name}"
+    password:
+      secretName: "${db_pass_secret_name}"
+      secretKey: "${db_pass_secret_key}"
+  
+  extraEnvironmentVars:
+    LABEL_STUDIO_USERNAME: ${ls_admin_username}
+    LABEL_STUDIO_PASSWORD: ${ls_admin_password}
+    LABEL_STUDIO_USER_TOKEN: ${ls_admin_token}
+
+    LABEL_STUDIO_DISABLE_SIGNUP_WITHOUT_LINK: "true"
+
+  %{ if gcs_persistence != null }
+  persistence:
+    enabled: true
+    type: gcs
+    config:
+      gcs:
+        projectID: ${ gcs_persistence.project }
+        bucket: ${ gcs_persistence.bucket }
+        folder: ${ gcs_persistence.prefix }
+        applicationCredentialsJSON: ${ jsonencode(gcs_persistence.application_credentials_json) }
+  %{ else }
+  %{ if s3_persistence != null }
+  persistence:
+    enabled: true
+    type: s3
+    config:
+      s3:
+        accessKey: "${ s3_persistence.access_key }"
+        secretKey: "${ s3_persistence.secret_key }"
+        bucket: "${ s3_persistence.bucket }"
+        region: "${ s3_persistence.region }"
+        folder: "${ s3_persistence.prefix }"
+        endpointUrl: "${ s3_persistence.endpoint }"
+  %{ else }
+  persistence:
+    enabled: false
+  %{ endif ~}
+  %{ endif ~}
+
+app:
+  deploymentStrategy:
+    type: Recreate
+
+  resources:
+    requests:
+      cpu: "${app_resources.requests.cpu}"
+      memory: "${app_resources.requests.memory}"
+    limits:
+      cpu: "${app_resources.limits.cpu}"
+      memory: "${app_resources.limits.memory}"
+
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+      nginx.ingress.kubernetes.io/proxy-body-size: 16m
+    host: ${ls_domain}
+    tls:
+      - hosts:
+          - ${ls_domain}
+        secretName: ${ls_domain}-tls
+
+rqworker:
+  enabled: true
+
+  queues:
+    default:
+      replicas: 1
+      args: '"default", "critical", "high", "low"'
+      resources:
+        requests:
+          cpu: "${app_resources.requests.cpu}"
+          memory: "${app_resources.requests.memory}"
+        limits:
+          cpu: "${app_resources.limits.cpu}"
+          memory: "${app_resources.limits.memory}"
+    critical: null
+    high: null
+    low: null
+  
+  serviceAccount:
+    create: true
+
+postgresql:
+  enabled: false
+
+redis:
+  enabled: true
