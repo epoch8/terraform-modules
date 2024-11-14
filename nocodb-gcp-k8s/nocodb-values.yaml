@@ -14,6 +14,8 @@ env:
     value: "${admin_password}"
   - name: DB_QUERY_LIMIT_DEFAULT
     value: "100"
+  - name: NC_DB_JSON_FILE
+    value: /configs/conn.json
 
 configs:
   - name: conn.json
