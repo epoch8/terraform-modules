@@ -1,3 +1,8 @@
+# 2024-11-15
+
+* Добавлена переменная `kube_prometheus_stack_enabled` которой можно отключить
+  разворачивание kube-prometheus-stack
+
 # 2024-11-11
 
 * Создание DNS записей в google вынесено в модуль [gcp-dns-entry](..%2Fgcp-dns-entry). Пример:
@@ -15,8 +20,6 @@ module "my_project_ingress_dns" {
 }
 ```
 
-
- 
 
 # 2024-10-19
 

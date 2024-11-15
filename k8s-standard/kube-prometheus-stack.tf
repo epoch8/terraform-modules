@@ -1,3 +1,8 @@
+variable "kube_prometheus_stack_enabled" {
+  type    = bool
+  default = true
+}
+
 variable "kube_prometheus_stack_version" {
   type    = string
   default = "48.2.2"
@@ -19,11 +24,15 @@ variable "prometheus_resources" {
 }
 
 resource "random_string" "grafana_admin_password" {
+  count   = var.kube_prometheus_stack_enabled ? 1 : 0
+
   length  = 15
   special = false
 }
 
 resource "kubernetes_namespace" "kube-prometheus-stack" {
+  count = var.kube_prometheus_stack_enabled ? 1 : 0
+
   metadata {
     name = var.kp_namespace
   }
@@ -34,17 +43,19 @@ locals {
 }
 
 resource "helm_release" "kube_prometheus_stack" {
+  count = var.kube_prometheus_stack_enabled ? 1 : 0
+
   name = "kube-prometheus-stack"
 
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "kube-prometheus-stack"
   version    = var.kube_prometheus_stack_version
 
-  namespace = kubernetes_namespace.kube-prometheus-stack.metadata.0.name
+  namespace = kubernetes_namespace.kube-prometheus-stack[0].metadata.0.name
 
   values = [
     templatefile("${path.module}/kube-prometheus-stack-values.yaml", {
-      admin_password = random_string.grafana_admin_password.result
+      admin_password = random_string.grafana_admin_password[0].result
       domain         = local.grafana_domain
       loki_enabled   = var.loki_enabled
 
@@ -54,11 +65,11 @@ resource "helm_release" "kube_prometheus_stack" {
 }
 
 resource "kubernetes_config_map_v1" "loki_logs_dashboard" {
-  count = var.loki_enabled ? 1 : 0
+  count = (var.loki_enabled && var.kube_prometheus_stack_enabled) ? 1 : 0
 
   metadata {
     name      = "loki-logs-dashboard-configmap"
-    namespace = kubernetes_namespace.kube-prometheus-stack.metadata.0.name
+    namespace = kubernetes_namespace.kube-prometheus-stack[0].metadata.0.name
     labels = {
       grafana_dashboard = "1"
     }
@@ -70,8 +81,8 @@ resource "kubernetes_config_map_v1" "loki_logs_dashboard" {
 
 output "grafana" {
   value = {
-    domain         = local.grafana_domain
-    admin_username = "admin"
-    admin_password = random_string.grafana_admin_password.result
+    domain         = var.kube_prometheus_stack_enabled ? local.grafana_domain : null
+    admin_username = var.kube_prometheus_stack_enabled ? "admin" : null
+    admin_password = var.kube_prometheus_stack_enabled ? random_string.grafana_admin_password[0].result : null
   }
 }

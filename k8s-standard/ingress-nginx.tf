@@ -26,7 +26,7 @@ resource "helm_release" "ingress_nginx" {
           enabled = true
         }
         metrics = {
-          enabled = true
+          enabled = var.kube_prometheus_stack_enabled
           serviceMonitor = {
             enabled = true
           }
