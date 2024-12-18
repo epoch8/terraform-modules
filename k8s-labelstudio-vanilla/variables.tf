@@ -1,4 +1,4 @@
-variable "project" {
+variable "name" {
   type = string
 }
 
@@ -84,3 +84,7 @@ variable "labelstudio_cleaner_retention_days" {
   default = 7
 }
 
+variable "enable_ingress" {
+  type = bool
+  default = true
+}

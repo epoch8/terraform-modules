@@ -60,6 +60,7 @@ app:
       cpu: "${app_resources.limits.cpu}"
       memory: "${app_resources.limits.memory}"
 
+  %{ if enable_ingress == true }
   ingress:
     enabled: true
     className: nginx
@@ -72,6 +73,10 @@ app:
       - hosts:
           - ${ls_domain}
         secretName: ${ls_domain}-tls
+  %{ else }
+  ingress:
+    enabled: false
+  %{ endif }
 
 rqworker:
   enabled: true

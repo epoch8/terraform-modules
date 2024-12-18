@@ -9,7 +9,7 @@ terraform {
 
 resource "kubernetes_secret_v1" "labelstudio" {
   metadata {
-    name      = "${var.project}-labelstudio"
+    name      = "${var.name}-ls-db-pass"
     namespace = var.k8s_namespace
   }
 
@@ -29,11 +29,11 @@ resource "random_string" "labelstudio_admin_token" {
 }
 
 resource "helm_release" "labelstudio" {
-  name = "${var.project}-labelstudio"
+  name = "${var.name}"
 
   repository = "https://charts.heartex.com/"
   chart      = "label-studio"
-  version    = "1.7.1"
+  version    = "1.7.4"
 
   # chart = "${path.module}/../../label-studio-charts/heartex/label-studio"
 
@@ -64,6 +64,8 @@ resource "helm_release" "labelstudio" {
 
         gcs_persistence = var.labelstudio_gcs_persistence
         s3_persistence  = var.labelstudio_s3_persistence
+
+        enable_ingress = var.enable_ingress
       }
     )
   ]

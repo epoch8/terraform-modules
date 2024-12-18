@@ -2,7 +2,7 @@ resource "kubernetes_cron_job_v1" "labelstudio_cleaner" {
   count = var.labelstudio_cleaner_enabled ? 1 : 0
 
   metadata {
-    name      = "${var.project}-labelstudio-cleaner"
+    name      = "${var.name}-cleaner"
     namespace = var.k8s_namespace
   }
 
