@@ -133,9 +133,10 @@ resource "yandex_storage_bucket" "media" {
 }
 
 module "labelstudio" {
-  source = "../k8s-labelstudio"
+  source = "../k8s-labelstudio-vanilla"
 
-  project               = var.project
+  name = "${var.project}-labelstudio"
+
   k8s_namespace         = var.k8s_namespace
   labelstudio_resources = var.labelstudio_resources
   base_domain           = var.base_domain
