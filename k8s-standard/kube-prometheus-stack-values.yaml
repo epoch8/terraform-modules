@@ -41,6 +41,12 @@ grafana:
     enabled: true
     size: 10Gi
 
+kube-state-metrics:
+  enabled: true
+
+  metricLabelsAllowlist:
+    - nodes=[cloud.google.com/gke-nodepool]
+
 %{ if loki_enabled }
   additionalDataSources:
     - name: Loki
