@@ -18,6 +18,15 @@ prometheus:
     resources: ${ jsonencode(prometheus_resources) }
     %{ endif }
 
+    %{ if priority_class != null }
+    priorityClassName: ${priority_class}
+    %{ endif }
+
+    %{ if gke_mode }
+    nodeSelector:
+      cloud.google.com/gke-provisioning: standard
+    %{ endif }
+
 grafana:
   adminUser: "admin"
   adminPassword: ${admin_password}
@@ -41,13 +50,7 @@ grafana:
     enabled: true
     size: 10Gi
 
-kube-state-metrics:
-  enabled: true
-
-  metricLabelsAllowlist:
-    - nodes=[cloud.google.com/gke-nodepool]
-
-%{ if loki_enabled }
+  %{ if loki_enabled }
   additionalDataSources:
     - name: Loki
       type: loki
@@ -57,4 +60,19 @@ kube-state-metrics:
       version: 1
       jsonData:
         maxLines: 1000
-%{ endif }
+  %{ endif }
+
+kube-state-metrics:
+  enabled: true
+
+  %{ if priority_class != null }
+  priorityClassName: ${priority_class}
+  %{ endif }
+
+  %{ if gke_mode }
+  metricLabelsAllowlist:
+    - nodes=[cloud.google.com/gke-nodepool,topology.kubernetes.io/region,topology.kubernetes.io/zone]
+
+  nodeSelector:
+    cloud.google.com/gke-provisioning: standard
+  %{ endif }

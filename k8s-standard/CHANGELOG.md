@@ -1,3 +1,10 @@
+# 2025-04-22
+
+* Для GKE добавлен `nodeSelector: cloud.google.com/gke-provisioning=standard`
+  чтобы prometeus не шедулился на временные ноды
+* Добавлен `priorityClass: high-priority-monitoring` чтобы prometheus мог
+  вытеснить что-то с постоянной ноды при решедулинге
+
 # 2025-04-21
 
 * Добавлен экспорт названия нодпула для GKE кластера в kube-state-metrics

@@ -12,6 +12,12 @@ variable "kp_namespace" {
   default = "kube-prometheus-stack"
 }
 
+variable "gke_mode" {
+  type        = bool
+  default     = false
+  description = "Enable GKE-specific options for kube-prometheus-stack (extra labels, node selector etc)"
+}
+
 variable "nginx_resources" {
   type = object({
     requests = object({

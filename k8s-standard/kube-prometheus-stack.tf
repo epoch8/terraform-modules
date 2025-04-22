@@ -24,7 +24,7 @@ variable "prometheus_resources" {
 }
 
 resource "random_string" "grafana_admin_password" {
-  count   = var.kube_prometheus_stack_enabled ? 1 : 0
+  count = var.kube_prometheus_stack_enabled ? 1 : 0
 
   length  = 15
   special = false
@@ -39,7 +39,19 @@ resource "kubernetes_namespace" "kube-prometheus-stack" {
 }
 
 locals {
-  grafana_domain      = "grafana.${var.base_domain}"
+  grafana_domain = "grafana.${var.base_domain}"
+}
+
+resource "kubernetes_priority_class_v1" "high_priority" {
+  count = var.kube_prometheus_stack_enabled ? 1 : 0
+
+  metadata {
+    name = "high-priority-monitoring"
+  }
+
+  global_default = false
+
+  value = 1000000
 }
 
 resource "helm_release" "kube_prometheus_stack" {
@@ -58,6 +70,8 @@ resource "helm_release" "kube_prometheus_stack" {
       admin_password = random_string.grafana_admin_password[0].result
       domain         = local.grafana_domain
       loki_enabled   = var.loki_enabled
+      gke_mode       = var.gke_mode
+      priority_class = kubernetes_priority_class_v1.high_priority[0].metadata.0.name
 
       prometheus_resources = var.prometheus_resources
     })
