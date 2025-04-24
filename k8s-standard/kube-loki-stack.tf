@@ -5,7 +5,7 @@ variable "loki_enabled" {
 
 variable "kube_loki_stack_version" {
   type = string
-  default = "2.9.9"
+  default = "2.10.2"
 }
 
 resource "kubernetes_namespace" "kube-loki-stack" {

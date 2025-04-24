@@ -5,7 +5,7 @@ variable "kube_prometheus_stack_enabled" {
 
 variable "kube_prometheus_stack_version" {
   type    = string
-  default = "48.2.2"
+  default = "70.7.0"
 }
 
 variable "prometheus_resources" {
