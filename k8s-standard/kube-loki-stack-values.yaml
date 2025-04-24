@@ -1,4 +1,14 @@
 loki:
+  enabled: true
+
   persistence:
     enabled: true
     size: 50Gi
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 750Mi
+    limits:
+      cpu: 1
+      memory: 1Gi
