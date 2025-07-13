@@ -1,3 +1,7 @@
+# 2025-07-13
+
+* Добавили явное требование провайдеров `kubernetes` и `helm`
+
 # 2025-04-22
 
 * Для GKE добавлен `nodeSelector: cloud.google.com/gke-provisioning=standard`
