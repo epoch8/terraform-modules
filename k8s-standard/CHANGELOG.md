@@ -1,3 +1,7 @@
+# 2025-08-25
+
+* Добавлена возможность переопределения `values` для `kube-loki-stack` и `kube-prometheus-stack` в модуле **k8s-standard**
+
 # 2025-07-13
 
 * Добавили явное требование провайдеров `kubernetes` и `helm`
