@@ -23,6 +23,11 @@ variable "prometheus_resources" {
   default = null
 }
 
+variable "kube_prometheus_stack_values_override" {
+  type = map(any)
+  default = {}
+}
+
 resource "random_string" "grafana_admin_password" {
   count = var.kube_prometheus_stack_enabled ? 1 : 0
 
@@ -74,7 +79,8 @@ resource "helm_release" "kube_prometheus_stack" {
       priority_class = kubernetes_priority_class_v1.high_priority[0].metadata.0.name
 
       prometheus_resources = var.prometheus_resources
-    })
+    }),
+    yamlencode(var.kube_prometheus_stack_values_override)
   ]
 }
 

@@ -8,6 +8,11 @@ variable "kube_loki_stack_version" {
   default = "2.10.2"
 }
 
+variable "kube_loki_stack_values_override" {
+  type = map(any)
+  default = {}
+}
+
 resource "kubernetes_namespace" "kube-loki-stack" {
   count = var.loki_enabled ? 1 : 0
   metadata {
@@ -26,6 +31,7 @@ resource "helm_release" "kube_loki_stack" {
   namespace = kubernetes_namespace.kube-loki-stack[0].metadata.0.name
 
   values = [
-    templatefile("${path.module}/kube-loki-stack-values.yaml", {})
+    templatefile("${path.module}/kube-loki-stack-values.yaml", {}),
+    yamlencode(var.kube_loki_stack_values_override)
   ]
 }
