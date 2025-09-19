@@ -1,3 +1,7 @@
+# 2025-09-19
+
+* Исправление типов переменных `kube_loki_stack_values_override` и `kube-kube_prometheus_stack_values_override-stack`
+
 # 2025-08-25
 
 * Добавлена возможность переопределения `values` для `kube-loki-stack` и `kube-prometheus-stack` в модуле **k8s-standard**
