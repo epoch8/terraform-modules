@@ -9,7 +9,7 @@ variable "kube_loki_stack_version" {
 }
 
 variable "kube_loki_stack_values_override" {
-  type = map(any)
+  type = any
   default = {}
 }
 

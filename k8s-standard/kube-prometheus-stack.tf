@@ -24,7 +24,7 @@ variable "prometheus_resources" {
 }
 
 variable "kube_prometheus_stack_values_override" {
-  type = map(any)
+  type = any
   default = {}
 }
 
