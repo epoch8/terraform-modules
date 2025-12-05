@@ -104,3 +104,5 @@ postgresql:
 
 redis:
   enabled: true
+  image:
+    repository: bitnamilegacy/redis
