@@ -1,3 +1,7 @@
+# 2026-01-12
+
+* Добавлены параметры `loki_disk_size_gb`, `loki_retention_days`
+
 # 2025-09-19
 
 * Исправление типов переменных `kube_loki_stack_values_override` и `kube-kube_prometheus_stack_values_override-stack`
