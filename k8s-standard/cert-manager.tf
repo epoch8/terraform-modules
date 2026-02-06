@@ -1,5 +1,5 @@
 variable "cert_manager_chart_version" {
-  type = string
+  type    = string
   default = "v1.9.1"
 }
 
@@ -18,10 +18,12 @@ resource "helm_release" "cert_manager" {
 
   namespace = kubernetes_namespace_v1.cert_manager.metadata.0.name
 
-  set {
-    name  = "installCRDs"
-    value = "true"
-  }
+  set = [
+    {
+      name  = "installCRDs"
+      value = "true"
+    }
+  ]
 }
 
 resource "kubernetes_manifest" "cluster_issuer" {
