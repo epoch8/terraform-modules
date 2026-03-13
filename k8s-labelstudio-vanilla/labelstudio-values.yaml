@@ -1,7 +1,7 @@
 global:
   image:
     repository: heartexlabs/label-studio
-    tag: 1.14.0
+    tag: 1.23.0
 
   pgConfig:
     host: "${db_host}"

@@ -36,7 +36,7 @@ resource "helm_release" "labelstudio" {
 
   repository = "https://charts.heartex.com/"
   chart      = "label-studio"
-  version    = "1.7.4"
+  version    = "2.0.0"
 
   # chart = "${path.module}/../../label-studio-charts/heartex/label-studio"
 
