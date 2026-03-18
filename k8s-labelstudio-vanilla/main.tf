@@ -2,7 +2,7 @@ terraform {
   required_providers {
     helm       = {
       source  = "hashicorp/helm"
-      version = "~> 2.0"
+      version = "~> 3.0"
     }
     kubernetes = {}
   }
@@ -76,14 +76,14 @@ resource "helm_release" "labelstudio" {
 
 output "k8s_sa" {
   value = {
-    app      = "${var.k8s_namespace}/${helm_release.labelstudio.metadata.0.name}-ls-app",
-    rqworker = "${var.k8s_namespace}/${helm_release.labelstudio.metadata.0.name}-ls-rqworker",
+    app      = "${var.k8s_namespace}/${helm_release.labelstudio.metadata.name}-ls-app",
+    rqworker = "${var.k8s_namespace}/${helm_release.labelstudio.metadata.name}-ls-rqworker",
   }
 }
 
 locals {
   public_uri     = "https://labelstudio.${var.base_domain}"
-  internal_uri   = "http://${helm_release.labelstudio.metadata.0.name}-ls-app.${var.k8s_namespace}.svc.cluster.local"
+  internal_uri   = "http://${helm_release.labelstudio.metadata.name}-ls-app.${var.k8s_namespace}.svc.cluster.local"
   admin_username = var.admin_email
   admin_password = random_string.labelstudio_admin_password.result
   token          = random_string.labelstudio_admin_token.result
@@ -99,7 +99,7 @@ output "config" {
       password = var.database.password
     }
     public_uri     = "https://labelstudio.${var.base_domain}"
-    internal_uri   = "http://${helm_release.labelstudio.metadata.0.name}-ls-app.${var.k8s_namespace}.svc.cluster.local"
+    internal_uri   = "http://${helm_release.labelstudio.metadata.name}-ls-app.${var.k8s_namespace}.svc.cluster.local"
     admin_username = var.admin_email
     admin_password = random_string.labelstudio_admin_password.result
     token          = random_string.labelstudio_admin_token.result

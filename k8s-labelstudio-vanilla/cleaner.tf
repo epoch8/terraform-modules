@@ -19,7 +19,7 @@ resource "kubernetes_cron_job_v1" "labelstudio_cleaner" {
           spec {
             restart_policy = "OnFailure"
 
-            service_account_name = "${helm_release.labelstudio.metadata.0.name}-ls-app"
+            service_account_name = "${helm_release.labelstudio.metadata.name}-ls-app"
 
             container {
               name  = "labelstudio-cleaner"
