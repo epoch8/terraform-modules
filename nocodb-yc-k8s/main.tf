@@ -11,6 +11,11 @@ variable "project" {
   type = string
 }
 
+variable "nocodb_host" {
+  type    = string
+  default = null
+}
+
 variable "k8s_namespace" {
   type = string
 }
@@ -45,6 +50,7 @@ variable "admin_email" {
 
 locals {
   project_with_underlines = replace(var.project, "-", "_")
+  nocodb_host = coalesce(var.nocodb_host, "nocodb.${var.project}.epoch8.co")
 }
 
 resource "random_string" "nocodb_password" {
@@ -124,7 +130,7 @@ resource "helm_release" "nocodb" {
     templatefile(
       "${path.module}/nocodb-values.yaml",
       {
-        ingress_host = "nocodb.${var.project}.epoch8.co"
+        ingress_host = local.nocodb_host
 
         name = "${var.project}-nocodb"
 
