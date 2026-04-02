@@ -118,18 +118,18 @@ resource "yandex_storage_bucket" "media" {
   access_key = var.yc_s3_root_key.access_key
   secret_key = var.yc_s3_root_key.secret_key
   bucket     = "${var.project}-labelstudio-media"
+}
+
+resource "yandex_storage_bucket_grant" "media" {
+  access_key = var.yc_s3_root_key.access_key
+  secret_key = var.yc_s3_root_key.secret_key
+  bucket     = yandex_storage_bucket.media.bucket
 
   grant {
     id          = yandex_iam_service_account.labelstudio.id
     type        = "CanonicalUser"
     permissions = ["FULL_CONTROL"]
   }
-
-  # grant {
-  #   uri         = "http://acs.amazonaws.com/groups/global/AllUsers"
-  #   type        = "Group"
-  #   permissions = ["READ"]
-  # }
 }
 
 module "labelstudio" {
