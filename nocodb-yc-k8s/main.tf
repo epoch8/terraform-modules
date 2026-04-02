@@ -98,6 +98,18 @@ resource "yandex_storage_bucket" "media" {
   secret_key = var.yc_s3_root_key.secret_key
   bucket     = "${var.project}-nocodb-media"
 
+  cors_rule {
+    allowed_headers = [ "*" ]
+    allowed_methods = [ "GET", "PUT", "POST", "DELETE", "HEAD" ]
+    allowed_origins = [ "*" ]
+  }
+}
+
+resource "yandex_storage_bucket_grant" "media" {
+  access_key = var.yc_s3_root_key.access_key
+  secret_key = var.yc_s3_root_key.secret_key
+  bucket     = yandex_storage_bucket.media.bucket
+
   grant {
     id          = yandex_iam_service_account.nocodb.id
     type        = "CanonicalUser"
@@ -108,12 +120,6 @@ resource "yandex_storage_bucket" "media" {
     uri         = "http://acs.amazonaws.com/groups/global/AllUsers"
     type        = "Group"
     permissions = ["READ"]
-  }
-
-  cors_rule {
-    allowed_headers = [ "*" ]
-    allowed_methods = [ "GET", "PUT", "POST", "DELETE", "HEAD" ]
-    allowed_origins = [ "*" ]
   }
 }
 
